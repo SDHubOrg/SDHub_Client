@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: DataModel
+Bundle-SymbolicName: org.sdhub.client.model.DataModel
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: org.sdhub
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.sdhub.client.model
+Require-Bundle: com.alibaba.fastjson;bundle-version="1.2.8"

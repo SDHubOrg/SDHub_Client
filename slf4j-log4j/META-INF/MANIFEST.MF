@@ -1,0 +1,8 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Slf4j-log4j
+Bundle-SymbolicName: org.slf4j.slf4j-log4j
+Bundle-Version: 1.7.21
+Bundle-Vendor: slf4j
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.slf4j.impl

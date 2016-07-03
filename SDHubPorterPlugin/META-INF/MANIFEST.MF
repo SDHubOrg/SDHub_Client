@@ -1,0 +1,17 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SDHubPorterPlugin
+Bundle-SymbolicName: org.sdhub.client.sdhubPorter;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.sdhub.client.porters.Activator
+Bundle-Vendor: org.sdhub
+Require-Bundle: org.eclipse.ui;bundle-version="3.107.0",
+ org.eclipse.core.runtime,
+ org.sdhub.client.model.DataModel;bundle-version="1.0.0",
+ org.sdhub.client.interfaces.DataPorterInterface;bundle-version="1.0.0",
+ org.apache.commons.pool2;bundle-version="2.4.2",
+ org.apache.commons.dbcp2;bundle-version="2.1.1",
+ org.apache.commons.lang;bundle-version="2.6.0",
+ com.mysql.jdbc.Driver;bundle-version="5.1.38"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy

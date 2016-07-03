@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            class="org.sdhub.client.fetchers.preferences.SDHubFetcherPreferencePage"
+            id="org.sdhub.client.fetchers.preferences.SDHubFetcherPreferencePage"
+            name="SD Hub Fetcher">
+      </page>
+   </extension>
+   <extension
+         point="org.eclipse.core.runtime.preferences">
+      <initializer
+            class="org.sdhub.client.fetchers.preferences.PreferenceInitializer">
+      </initializer>
+   </extension>
+
+</plugin>

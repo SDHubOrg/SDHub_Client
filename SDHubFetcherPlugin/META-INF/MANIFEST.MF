@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: SDHubFetcherPlugin
+Bundle-SymbolicName: org.sdhub.client.sdhubFetcher;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.sdhub.client.fetchers.Activator
+Bundle-Vendor: org.sdhub
+Require-Bundle: org.eclipse.ui;bundle-version="3.107.0",
+ org.eclipse.core.runtime,
+ org.sdhub.client.model.DataModel;bundle-version="1.0.0",
+ org.sdhub.client.interface.DataFetcherInterface;bundle-version="1.0.0",
+ org.apache.httpcomponents.httpclient;bundle-version="4.3.6";resolution:=optional,
+ org.apache.httpcomponents.httpcore;bundle-version="4.3.3";resolution:=optional,
+ com.alibaba.fastjson;bundle-version="1.2.8";resolution:=optional
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-ActivationPolicy: lazy
