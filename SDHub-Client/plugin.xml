@@ -137,5 +137,29 @@
          </view>
       </perspectiveExtension>
    </extension>
+   <extension
+         id="product"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="SDHub-Client.application"
+            name="SDHub_Client">
+         <property
+               name="appName"
+               value="SDHub_Client">
+         </property>
+      </product>
+   </extension>
+   <extension
+         id="sdhub_client2"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="SDHub-Client.application"
+            name="SDHub_Client">
+         <property
+               name="appName"
+               value="SDHub_Client">
+         </property>
+      </product>
+   </extension>
 
 </plugin>

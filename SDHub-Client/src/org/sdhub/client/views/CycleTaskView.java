@@ -368,6 +368,22 @@ public class CycleTaskView extends ViewPart {
 		if(null != table)
 		{
 			int width = table.getSize().x;
+			
+			if(tblclmnTableName == null)
+			{
+				return;
+			}
+			
+			if(tblclmnSchedule == null)
+			{
+				return;
+			}
+			
+			if(tblclmnStatus == null)
+			{
+				return;
+			}
+			
 			tblclmnTableName.setWidth(width / 2 - 1);
 			tblclmnSchedule.setWidth(width / 4 - 1);
 			tblclmnStatus.setWidth(width / 4 - 1);

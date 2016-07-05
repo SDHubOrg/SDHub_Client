@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: Logging
-Bundle-SymbolicName: org.apache.commons.logging
-Bundle-Version: 1.2.0
-Bundle-Vendor: apache
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: org.apache.commons.logging,
- org.apache.commons.logging.impl

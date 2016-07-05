@@ -11,11 +11,11 @@ public interface IDataFetcher {
 	public String getName();
 	public String getLastError();
 	
+	public List<MainIndexRecordModel> fetchSchedule();
+	
 	public void fetchUpdateData(String tableName);
 	
 	public List<TableIndexRecordModel> fetchIndex(String tableName);
-	
-	public List<MainIndexRecordModel> fetchSchedule();
 	
 	public List<JsonTableModel> fetchData(String tableName, int lastSeqNo);
 	

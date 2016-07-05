@@ -181,6 +181,16 @@ public class SDHubFetcher implements IDataFetcher {
 		List<TableIndexRecordModel> remoteList = fetchIndex(dataSource, tableName);
 		List<TableIndexRecordModel> localList = loadIndex(localStore, tableName);
 		
+		if(remoteList == null)
+		{
+			return;
+		}
+		
+		if(remoteList.isEmpty())
+		{
+			return;
+		}
+		
 		if(null == localList)
 		{
 			isLocalStoreEmpty = true;
@@ -205,7 +215,6 @@ public class SDHubFetcher implements IDataFetcher {
 		}
 		
 		List<JsonTableModel> remoteDatas = fetchData(dataSource, tableName, lastSeqNoInLocal);
-		int index = 0;
 
 		for(JsonTableModel jsonTableModel : remoteDatas)
 		{
@@ -327,6 +336,32 @@ public class SDHubFetcher implements IDataFetcher {
 		return new ArrayList<JsonTableModel>();
 	}
 
+	public void writeData(String localStore, String tableName, String fileName, JsonTableModel jsonTableModel)
+	{
+		String jtmFilePath = localStore + "/" + tableName + "/" + fileName;
+		File newjtmFile = new File(jtmFilePath);
+		JSONWriter jtmWriter = null;
+		try {
+			newjtmFile.createNewFile();
+			jtmWriter = new JSONWriter(new FileWriter(newjtmFile));
+			jtmWriter.writeValue(jsonTableModel);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+
+		}finally {
+			try {
+				if(jtmWriter != null)
+				{
+					jtmWriter.close();
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	}
+	
 	public List<JsonTableModel> loadData(String localStore, String tableName) {
 		return loadData(localStore, tableName, -1);
 	}
@@ -476,6 +511,34 @@ public class SDHubFetcher implements IDataFetcher {
 		return tirmList;
 	}
 
+	public void writeIndex(String localStore, String tableName, List<TableIndexRecordModel> tableIndexRecordList)
+	{
+		String filePath = localStore + "/" + tableName + "/" + "index.json";
+		JSONWriter writer = null;
+		try {
+			writer = new JSONWriter(new FileWriter(filePath));
+	
+			writer.startArray();
+			for (TableIndexRecordModel tirmTemp : tableIndexRecordList) {
+				writer.writeValue(tirmTemp);
+			}
+			writer.endArray();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally {
+			try {
+				if(writer != null)
+				{
+					writer.close();
+				}
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+	}
+	
 	public boolean checkLocalData(String tableName) {
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		
@@ -514,7 +577,7 @@ public class SDHubFetcher implements IDataFetcher {
 		return true;
 	}
 
-	private int addFile(String localStore, String tableName, TableIndexRecordModel newTirm, JsonTableModel jtm)
+	private void addFile(String localStore, String tableName, TableIndexRecordModel newTirm, JsonTableModel jtm)
 	{
 		String filePath = "";
 		String dirPath = "";
@@ -592,15 +655,56 @@ public class SDHubFetcher implements IDataFetcher {
 			writer.endArray();
 			writer.close();
 			
-			return 0;
+			return;
 		}catch (Exception e) {
-			//logger.error("write json file fail!", e);
-			return -1;
+			e.printStackTrace();
 		}
 
 	}
 
-	public void syncData(String localStore, String dataSource, String tableName )
-	
+/*	public void syncData(String tableName)
+	{
+		List<TableIndexRecordModel> localTIRMList = loadIndex(tableName);
+		List<TableIndexRecordModel> remoteTIRMList = fetchIndex(tableName);
+		List<TableIndexRecordModel> diffTIRMList = new ArrayList<TableIndexRecordModel>();
+		
+		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+		
+		if(!(store.contains(PreferenceConstants.SD_DATA_SOURCE)) || (!store.contains(PreferenceConstants.SD_LOCAL_STORE)))
+		{
+			return;
+		}
+		
+		String localStore = store.getString(PreferenceConstants.SD_LOCAL_STORE);
+		String dataSource = store.getString(PreferenceConstants.SD_DATA_SOURCE);
+		
+		for(TableIndexRecordModel tirmRemote : remoteTIRMList)
+		{
+			boolean flag = false;
+			for(TableIndexRecordModel tirmLocal : localTIRMList)
+			{
+				if(tirmRemote.getName().equals(tirmLocal.getName()))
+				{
+					flag = true;
+					break;
+				}
+			}
+			if(!flag)
+			{
+				diffTIRMList.add(tirmRemote);
+			}
+		}
+		
+		for(TableIndexRecordModel tirmDiff : diffTIRMList)
+		{
+			JsonTableModel jsonTableModel= fetchDataByFileName(dataSource, tableName, tirmDiff.getName());
+			writeData(localStore, tableName, tirmDiff.getName(), jsonTableModel);
+		}
+		
+		localTIRMList.addAll(diffTIRMList);
+		
+		writeIndex(localStore, tableName, localTIRMList);
+		
+	}*/
 	
 }
