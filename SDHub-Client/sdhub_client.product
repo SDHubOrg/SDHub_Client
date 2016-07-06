@@ -3,6 +3,13 @@
 
 <product name="SDHub_Client" uid="org.sdhub.client" id="SDHub-Client.sdhub_client2" application="SDHub-Client.application" version="0.7.1" useFeatures="false" includeLaunchers="true">
 
+   <aboutInfo>
+      <image path="/SDHub-Client/icons/sdhub_client_48.png"/>
+      <text>
+         www.sdhub.org是一个开源的金融数据分享平台，我们利用网友贡献的脚本，从互联网获取数据分享给更多网友
+      </text>
+   </aboutInfo>
+
    <configIni use="default">
    </configIni>
 
@@ -15,10 +22,17 @@
       </vmArgsMac>
    </launcherArgs>
 
+   <windowImages i32="/SDHub-Client/icons/sdhub_client_32.png" i48="/SDHub-Client/icons/sdhub_client_48.png"/>
+
+   <splash
+      location="SDHub-Client"
+      startupProgressRect="5,275,445,15" />
    <launcher name="SDHub_Client">
       <solaris/>
       <win useIco="false">
-         <bmp/>
+         <bmp
+            winMediumHigh="/SDHub-Client/icons/sdhub_client_32.bmp"
+            winLargeHigh="/SDHub-Client/icons/sdhub_client_48.bmp"/>
       </win>
    </launcher>
 
@@ -131,5 +145,12 @@
       <plugin id="org.sdhub.client.sdhubFetcher" autoStart="true" startLevel="0" />
       <plugin id="org.sdhub.client.sdhubPorter" autoStart="true" startLevel="0" />
    </configurations>
+
+   <preferencesInfo>
+      <targetfile overwrite="false"/>
+   </preferencesInfo>
+
+   <cssInfo>
+   </cssInfo>
 
 </product>

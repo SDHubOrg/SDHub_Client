@@ -73,6 +73,7 @@ public class CycleTaskView extends ViewPart {
 
 		{
 			startButton = new Button(container, SWT.NONE);
+			startButton.setImage(ResourceManager.getPluginImage("SDHub-Client", "icons/arrow-right-3.ico"));
 			startButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
 			startButton.setText("Start");
 			startButton.addSelectionListener(new SelectionListener() {
@@ -90,6 +91,7 @@ public class CycleTaskView extends ViewPart {
 		}
 		{
 			stopButton = new Button(container, SWT.NONE);
+			stopButton.setImage(ResourceManager.getPluginImage("SDHub-Client", "icons/media-playback-stop-7.png"));
 			stopButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
 			stopButton.setText("Stop");
 			stopButton.addSelectionListener(new SelectionListener() {
@@ -108,7 +110,7 @@ public class CycleTaskView extends ViewPart {
 
 		{
 			refreshButton = new Button(container, SWT.NONE);
-			refreshButton.setImage(ResourceManager.getPluginImage("SDHub-Client", "icons/alt_window_16.gif"));
+			refreshButton.setImage(ResourceManager.getPluginImage("SDHub-Client", "icons/view-refresh-5.ico"));
 			refreshButton.setToolTipText("Download Schedule From Data Source Site");
 			refreshButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
 			refreshButton.setText("Refresh");
@@ -152,29 +154,38 @@ public class CycleTaskView extends ViewPart {
 		        public void handleEvent(Event event) {
 		            TableItem item = (TableItem)event.item;
 		            int index = event.index;
+		            
+		            Color light_green = new Color(Display.getCurrent(), 143,171,8);
+		            Color light_blue = new Color(Display.getCurrent(), 94,165,157);
+		            Color light_gray = new Color(Display.getCurrent(), 150,150,150);
+		            
 		            if(index < SyncController.ScheduleList.size())
 		            {
 		                ScheduleModel smItem = SyncController.ScheduleList.get(index);
 		                String timeString = String.format("%02d", smItem.getHour()) + ":" + String.format("%02d", smItem.getMinute());
 		                String isEnable = "";
+
 		                if(smItem.isEnable() == true)
 		                {
 		                	isEnable = "Enable";
+		                	
+			                if(smItem.getStatus() == ScheduleModel.UNHANDLED)
+			                {
+			                	item.setBackground(light_green);
+			                }
+		                	
+			                if(smItem.getStatus() == ScheduleModel.PROCESSING)
+			                {
+			                	item.setBackground(light_blue);
+			                }
+			                
 		                }else{
 		                	isEnable = "Disable";
+		                	item.setBackground(light_gray);
 		                }
+		                
 		                item.setText(new String[] {smItem.getTableName(), timeString, isEnable});
 		                
-		                if(smItem.getStatus() == ScheduleModel.PROCESSING)
-		                {
-		                	item.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_GREEN));
-		                }
-		                
-		                if(smItem.getStatus() == ScheduleModel.UNHANDLED)
-		                {
-		                	item.setBackground(Display.getCurrent().getSystemColor(SWT.COLOR_GRAY));
-		                }
-
 		            }
 		        }
 		    });
@@ -216,7 +227,6 @@ public class CycleTaskView extends ViewPart {
                         	SyncController.sync(tableItem.getText(0));
                         }
                     }); 
-                    
 
                     MenuItem menuItem2 = new MenuItem(menu, SWT.POP_UP);  
                 	if("Enable".equals(tableItem.getText(2).toString()))
@@ -229,8 +239,9 @@ public class CycleTaskView extends ViewPart {
                 	}
                     menuItem2.addListener(SWT.Selection, new Listener() {  
                         public void handleEvent(Event event) {
-                        	System.out.println("menuItem2.addListener");
+
                         	IPreferenceStore store = Activator.getDefault().getPreferenceStore();
+                        	
                            	if("Enable".equals(tableItem.getText(2).toString()))
                         	{
                            		store.setValue(tableItem.getText(0).toString(), false);
@@ -249,6 +260,8 @@ public class CycleTaskView extends ViewPart {
             		                	{
             		                		if(null != tableItem){
             		                			tableItem.setText(2, "Disable");
+            		        		            Color light_gray = new Color(Display.getCurrent(), 150,150,150);
+            		        		            tableItem.setBackground(light_gray);
             		                		}
             		                	}
             		                }
@@ -259,7 +272,7 @@ public class CycleTaskView extends ViewPart {
                         	if("Disable".equals(tableItem.getText(2).toString()))
                         	{
                         		store.setValue(tableItem.getText(0).toString(), true);
-                        		
+
             		            for(ScheduleModel smTemp1 : SyncController.ScheduleList)
             		            {
             		            	if(smTemp1.getTableName().equals(tableItem.getText(0).toString()))
@@ -274,12 +287,15 @@ public class CycleTaskView extends ViewPart {
             		                	{
             		                		if(null != tableItem){
             		                			tableItem.setText(2, "Enable");
+            		                			Color light_green = new Color(Display.getCurrent(), 143,171,8);
+            		                			tableItem.setBackground(light_green);
             		                		}
             		                	}
             		                }
             		            });
                         		
                         	}
+                        	System.out.println(store.getBoolean(tableItem.getText(0).toString()));
                         }
                     }); 
                 }  
@@ -290,12 +306,13 @@ public class CycleTaskView extends ViewPart {
 
 		Timer viewRefreshTimer = new Timer();
 		
-		viewRefreshTimer.schedule(new RefreshStatusTask(), 0, 5 * 1000);
+		viewRefreshTimer.schedule(new RefreshStatusTask(), 0, 3 * 1000);
 
 		createActions();
 		initializeToolBar();
 		initializeMenu();
 		refreshSchedule();
+		triggerButtonStat();
 	}
 
 	private void refreshSchedule()
@@ -359,6 +376,11 @@ public class CycleTaskView extends ViewPart {
 			return;
 		}
 		
+		if(table.isDisposed())
+		{
+			return;
+		}
+		
 		tidyTable();
 		table.clearAll();
 	}
@@ -367,7 +389,7 @@ public class CycleTaskView extends ViewPart {
 	{
 		if(null != table)
 		{
-			int width = table.getSize().x;
+			int width = table.getSize().x - 10;
 			
 			if(tblclmnTableName == null)
 			{
@@ -384,9 +406,24 @@ public class CycleTaskView extends ViewPart {
 				return;
 			}
 			
-			tblclmnTableName.setWidth(width / 2 - 1);
-			tblclmnSchedule.setWidth(width / 4 - 1);
-			tblclmnStatus.setWidth(width / 4 - 1);
+			if(tblclmnStatus.isDisposed())
+			{
+				return;
+			}
+			
+			if(tblclmnSchedule.isDisposed())
+			{
+				return;
+			}
+			
+			if(tblclmnStatus.isDisposed())
+			{
+				return;
+			}
+			
+			tblclmnTableName.setWidth(width / 2 );
+			tblclmnSchedule.setWidth(width / 4 );
+			tblclmnStatus.setWidth(width / 4 );
 		}
 	}
 	
@@ -404,10 +441,17 @@ public class CycleTaskView extends ViewPart {
 			{
 				return;
 			}
+
 			if(null == CycleTaskView.this.display)
 			{
 				return;
 			}
+			
+			if(CycleTaskView.this.display.isDisposed())
+			{
+				return;
+			}
+			
 			CycleTaskView.this.display.asyncExec(new Runnable() {
                 @Override
                 public void run() {

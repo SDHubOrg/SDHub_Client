@@ -34,6 +34,8 @@ public  class  SyncController {
 	
 	private static Scheduler quartzScheduler;
 	
+	private static Scheduler temporaryScheduler;
+	
 	public static HashMap<String, ScheduleModel> ScheduleMap = new HashMap<String, ScheduleModel>();
 	
 	public static List<ScheduleModel> ScheduleList = new ArrayList<ScheduleModel>();
@@ -41,6 +43,12 @@ public  class  SyncController {
 	public static synchronized int getStatus()
 	{
 		try {
+			
+			if(null == quartzScheduler)
+			{
+				return STOPED;
+			}
+			
 			if(quartzScheduler.isShutdown())
 			{
 				return STOPED;
@@ -107,6 +115,8 @@ public  class  SyncController {
 			smTemp.setHour(hour);
 			smTemp.setMinute(minute);
 			
+			store.setDefault(mirmTemp.getTableName(), true);
+			
 			if(store.contains(smTemp.getTableName()))
 			{
 				smTemp.setEnable(store.getBoolean(smTemp.getTableName()));
@@ -119,6 +129,15 @@ public  class  SyncController {
 		}
 		ScheduleList.clear();
 		ScheduleList.addAll(ScheduleMap.values());
+		
+		SchedulerFactory schedulerFactory = new StdSchedulerFactory();
+		try {
+			temporaryScheduler = schedulerFactory.getScheduler();
+			temporaryScheduler.start();
+		} catch (SchedulerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public static synchronized void start()
@@ -138,7 +157,6 @@ public  class  SyncController {
 			SchedulerFactory schedulerFactory = new StdSchedulerFactory();
 			
 			quartzScheduler = schedulerFactory.getScheduler();
-			quartzScheduler.start();
 
 			for(ScheduleModel smTemp : ScheduleList)
 			{
@@ -189,57 +207,22 @@ public  class  SyncController {
 	{
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		
-		if(!store.contains(PreferenceConstants.FETCHER_NAME))
-		{
-			return;
-		}
+		JobDetail jobDetailTemp = new JobDetail(tableName, null, SyncJob.class);
 		
-		if(!store.contains(PreferenceConstants.PORTER_NAME))
-		{
-			return;
-		}
-		
-		IDataFetcher dataFetcher = FetcherPlugins.dataFetchersHashMap.get(store.getString(PreferenceConstants.FETCHER_NAME));
-		IDataPorter dataPorter = PorterPlugins.dataPortersHashMap.get(store.getString(PreferenceConstants.PORTER_NAME));
-		
-		if(null == dataFetcher)
-		{
-			return;
-		}
-		
-		if(null == dataPorter)
-		{
-			return;
-		}
-		
-		List<TableIndexRecordModel> tableIndexRecordList = dataFetcher.fetchIndex(tableName);
-		
-		if(null == tableIndexRecordList)
-		{
-			return;
-		}
-		
-		if(tableIndexRecordList.isEmpty())
-		{
-			return;
-		}
-		
-		int lastSeqNoInDB = dataPorter.getLastSeqNo(tableName);
-		
-		dataFetcher.fetchUpdateData(tableName);
-		
-		List<JsonTableModel> dataList = dataFetcher.loadData(tableName, lastSeqNoInDB);
-		
-		if(dataList.isEmpty())
-		{
-			return;
-		}
+		jobDetailTemp.setName(tableName);
+		jobDetailTemp.getJobDataMap().put("TableName", tableName);
+		jobDetailTemp.getJobDataMap().put("FetcherName", store.getString(PreferenceConstants.FETCHER_NAME));
+		jobDetailTemp.getJobDataMap().put("PorterName", store.getString(PreferenceConstants.PORTER_NAME));
 
-		for(JsonTableModel jsonTableModel : dataList)
-		{
-			dataPorter.initTable(jsonTableModel);
-			dataPorter.processTableModel(jsonTableModel);
+		Trigger triggerTemp = TriggerUtils.makeImmediateTrigger(tableName + "_temp",0, 1);
+		
+		try {
+			temporaryScheduler.scheduleJob(jobDetailTemp, triggerTemp);
+		} catch (SchedulerException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		System.out.println("sync  : " + tableName );
 
 	}
 }

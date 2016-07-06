@@ -26,7 +26,7 @@
       <view
             allowMultiple="false"
             class="org.sdhub.client.views.CycleTaskView"
-            icon="icons/alt_window_32.gif"
+            icon="icons/view-calendar-time-spent.png"
             id="org.sdhub.client.views.CycleTaskView"
             name="Cycle Task Window">
       </view>
@@ -104,7 +104,7 @@
                id="org.sdhub.client.views.ResourceListView"
                minimized="false"
                moveable="false"
-               ratio="0.19f"
+               ratio="0.28f"
                relationship="right"
                relative="org.sdhub.client.views.CycleTaskView"
                showTitle="false"
@@ -116,7 +116,7 @@
                id="org.sdhub.client.views.WebView"
                minimized="false"
                moveable="false"
-               ratio="0.62f"
+               ratio="0.55f"
                relationship="right"
                relative="org.sdhub.client.views.ResourceListView"
                showTitle="false"
@@ -128,7 +128,7 @@
                id="org.sdhub.client.views.LogView"
                minimized="false"
                moveable="false"
-               ratio="0.74f"
+               ratio="0.7f"
                relationship="bottom"
                relative="org.sdhub.client.views.ResourceListView"
                showTitle="false"
@@ -158,6 +158,26 @@
          <property
                name="appName"
                value="SDHub_Client">
+         </property>
+         <property
+               name="aboutImage"
+               value="icons/sdhub_client_48.png">
+         </property>
+         <property
+               name="aboutText"
+               value="www.sdhub.org是一个开源的金融数据分享平台，我们利用网友贡献的脚本，从互联网获取数据分享给更多网友">
+         </property>
+         <property
+               name="windowImages"
+               value="icons/sdhub_client_32.png,icons/sdhub_client_48.png">
+         </property>
+         <property
+               name="startupProgressRect"
+               value="5,275,445,15">
+         </property>
+         <property
+               name="preferenceCustomization"
+               value="plugin_customization.ini">
          </property>
       </product>
    </extension>

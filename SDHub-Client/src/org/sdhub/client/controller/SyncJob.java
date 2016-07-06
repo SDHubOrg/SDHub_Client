@@ -44,11 +44,15 @@ public class SyncJob implements Job, JobStore, JobListener{
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		
+		ScheduleModel sm = null;
+
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 
 		{
 			this.tableName = (String)context.getJobDetail().getJobDataMap().get("TableName");
 
+			System.out.println("Sync Job Start, table name : " + this.tableName);
+			
 			String fetcherName = (String)context.getJobDetail().getJobDataMap().get("FetcherName");
 			String porterName = (String)context.getJobDetail().getJobDataMap().get("PorterName");
 
@@ -56,35 +60,54 @@ public class SyncJob implements Job, JobStore, JobListener{
 			this.dataPorter = PorterPlugins.dataPortersHashMap.get(porterName);
 		}
 		
+		for(ScheduleModel scheduleModel : SyncController.ScheduleList)
+		{
+			if(scheduleModel.getTableName().endsWith(this.tableName))
+			{
+				sm = scheduleModel;
+				break;
+			}
+		}
+		
+		sm.setStatus(ScheduleModel.PROCESSING);
+		
 		if(null == this.dataFetcher)
 		{
+			sm.setStatus(ScheduleModel.UNHANDLED);
 			return;
 		}
 		
 		if(null == this.dataPorter)
 		{
+			sm.setStatus(ScheduleModel.UNHANDLED);
 			return;
 		}
 		
 		if(store.contains(this.tableName))
 		{
+			System.out.println("Store Contain Table Name : " + this.tableName);
 			if(store.getBoolean(this.tableName) == false)
 			{
 				System.out.println("job is disabled : " + this.tableName);
+				sm.setStatus(ScheduleModel.UNHANDLED);
 				return;
 			}
+		}else{
+			System.out.println("Store Do Not Contain Table Name : " + this.tableName);
 		}
 
 		List<TableIndexRecordModel> tableIndexRecordList = dataFetcher.fetchIndex(tableName);
 		if(null == tableIndexRecordList)
 		{
 			System.out.println("tableIndexRecordList is null ");
+			sm.setStatus(ScheduleModel.UNHANDLED);
 			return;
 		}
 
 		if(tableIndexRecordList.isEmpty())
 		{
 			System.out.println("tableIndexRecordList is empty ");
+			sm.setStatus(ScheduleModel.UNHANDLED);
 			return;
 		}
 
@@ -95,6 +118,7 @@ public class SyncJob implements Job, JobStore, JobListener{
 		if(dataList.isEmpty())
 		{
 			System.out.println("dataList is empty ");
+			sm.setStatus(ScheduleModel.UNHANDLED);
 			return;
 		}
 
@@ -103,7 +127,8 @@ public class SyncJob implements Job, JobStore, JobListener{
 			dataPorter.initTable(jsonTableModel);
 			dataPorter.processTableModel(jsonTableModel);
 		}
-
+		
+		sm.setStatus(ScheduleModel.UNHANDLED);
 	}
 
 
