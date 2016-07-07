@@ -30,6 +30,7 @@ import org.sdhub.client.model.TableIndexRecordModel;
 import org.sdhub.client.preference.PreferenceConstants;
 import org.sdhub.client.trackers.FetcherPlugins;
 import org.sdhub.client.trackers.PorterPlugins;
+import org.sdhub.client.util.LogUtil;
 
 public class SyncJob implements Job, JobStore, JobListener{
 
@@ -51,13 +52,21 @@ public class SyncJob implements Job, JobStore, JobListener{
 		{
 			this.tableName = (String)context.getJobDetail().getJobDataMap().get("TableName");
 
-			System.out.println("Sync Job Start, table name : " + this.tableName);
+			LogUtil.showLogWithTime("Start syncro table : " + this.tableName);
 			
 			String fetcherName = (String)context.getJobDetail().getJobDataMap().get("FetcherName");
 			String porterName = (String)context.getJobDetail().getJobDataMap().get("PorterName");
 
 			this.dataFetcher = FetcherPlugins.dataFetchersHashMap.get(fetcherName);
 			this.dataPorter = PorterPlugins.dataPortersHashMap.get(porterName);
+		}
+		
+		if(store.contains(this.tableName))
+		{
+			if(store.getBoolean(this.tableName) == false)
+			{
+				return;
+			}
 		}
 		
 		for(ScheduleModel scheduleModel : SyncController.ScheduleList)
@@ -74,39 +83,28 @@ public class SyncJob implements Job, JobStore, JobListener{
 		if(null == this.dataFetcher)
 		{
 			sm.setStatus(ScheduleModel.UNHANDLED);
+			LogUtil.showLogWithTime("WARN no useable Data Fetcher Plugin for " + this.tableName);
 			return;
 		}
 		
 		if(null == this.dataPorter)
 		{
 			sm.setStatus(ScheduleModel.UNHANDLED);
+			LogUtil.showLogWithTime("WARN no useable Data Porter Plugin for " + this.tableName);
 			return;
-		}
-		
-		if(store.contains(this.tableName))
-		{
-			System.out.println("Store Contain Table Name : " + this.tableName);
-			if(store.getBoolean(this.tableName) == false)
-			{
-				System.out.println("job is disabled : " + this.tableName);
-				sm.setStatus(ScheduleModel.UNHANDLED);
-				return;
-			}
-		}else{
-			System.out.println("Store Do Not Contain Table Name : " + this.tableName);
 		}
 
 		List<TableIndexRecordModel> tableIndexRecordList = dataFetcher.fetchIndex(tableName);
 		if(null == tableIndexRecordList)
 		{
-			System.out.println("tableIndexRecordList is null ");
+			LogUtil.showLogWithTime("ERROR can not get index.json of " + this.tableName);
 			sm.setStatus(ScheduleModel.UNHANDLED);
 			return;
 		}
 
 		if(tableIndexRecordList.isEmpty())
 		{
-			System.out.println("tableIndexRecordList is empty ");
+			LogUtil.showLogWithTime("ERROR index.json of " + this.tableName + " is Empty");
 			sm.setStatus(ScheduleModel.UNHANDLED);
 			return;
 		}
@@ -117,7 +115,7 @@ public class SyncJob implements Job, JobStore, JobListener{
 		List<JsonTableModel> dataList = dataFetcher.loadData(tableName, lastSeqNoInDB);
 		if(dataList.isEmpty())
 		{
-			System.out.println("dataList is empty ");
+			LogUtil.showLogWithTime("No updates for " + this.tableName);
 			sm.setStatus(ScheduleModel.UNHANDLED);
 			return;
 		}

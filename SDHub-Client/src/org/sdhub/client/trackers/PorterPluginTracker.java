@@ -20,8 +20,8 @@ public class PorterPluginTracker implements ServiceTrackerCustomizer {
 		IDataPorter dataPorter = (IDataPorter) bc.getService(reference);
 
 		String dataPorterName = dataPorter.getName();
-		System.out.print("Adding Plugin: ");
-		System.out.println(dataPorterName);
+		//System.out.print("Adding Plugin: ");
+		//System.out.println(dataPorterName);
 
 		if (PorterPlugins.dataPortersHashMap.isEmpty()) {
 			//PlatformUI.getPreferenceStore().setValue("PorterPluginName", dataPorterName);
@@ -36,8 +36,8 @@ public class PorterPluginTracker implements ServiceTrackerCustomizer {
 		IDataPorter dataPorter = (IDataPorter) bc.getService(reference);
 		String dataPorterName = dataPorter.getName();
 		
-		System.out.print("Modified Plugin");
-		System.out.println(dataPorterName);
+		//System.out.print("Modified Plugin");
+		//System.out.println(dataPorterName);
 		
 		PorterPlugins.dataPortersHashMap.put(dataPorterName, dataPorter);
 		return;
@@ -49,8 +49,8 @@ public class PorterPluginTracker implements ServiceTrackerCustomizer {
 		IDataPorter dataPorter = (IDataPorter) bc.getService(reference);
 		String dataPorterName = dataPorter.getName();
 		
-		System.out.println("removedService");
-		System.out.println(dataPorterName);
+		//System.out.println("removedService");
+		//System.out.println(dataPorterName);
 		
 		if (PorterPlugins.dataPortersHashMap.containsKey(dataPorterName)) {
 			PorterPlugins.dataPortersHashMap.remove(dataPorterName);

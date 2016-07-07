@@ -25,6 +25,7 @@ import org.sdhub.client.model.TableIndexRecordModel;
 import org.sdhub.client.preference.PreferenceConstants;
 import org.sdhub.client.trackers.FetcherPlugins;
 import org.sdhub.client.trackers.PorterPlugins;
+import org.sdhub.client.util.LogUtil;
 
 public  class  SyncController {
 
@@ -142,6 +143,8 @@ public  class  SyncController {
 	
 	public static synchronized void start()
 	{
+		
+		LogUtil.showLogWithTime("Start Scheduler ...");
 		try {
 
 			IPreferenceStore store = Activator.getDefault().getPreferenceStore();
@@ -183,6 +186,7 @@ public  class  SyncController {
 	
 	public static synchronized void stop()
 	{
+		LogUtil.showLogWithTime("Stop Scheduler ...");
 		try{
 			if(null != quartzScheduler)
 			{
@@ -199,12 +203,15 @@ public  class  SyncController {
 	
 	public static synchronized void restart()
 	{
+		LogUtil.showLogWithTime("Restart Scheduler ...");
 		stop();
 		start();
 	}
 	
 	public static void sync(String tableName)
 	{
+		LogUtil.showLogWithTime("Manually Update : " + tableName);
+		
 		IPreferenceStore store = Activator.getDefault().getPreferenceStore();
 		
 		JobDetail jobDetailTemp = new JobDetail(tableName, null, SyncJob.class);
@@ -222,7 +229,6 @@ public  class  SyncController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println("sync  : " + tableName );
 
 	}
 }

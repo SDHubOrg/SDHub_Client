@@ -4,12 +4,17 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
+import org.sdhub.client.util.LogUtil;
+import org.eclipse.swt.layout.FillLayout;
 
 public class LogView extends ViewPart {
 
 	public static final String ID = "org.sdhub.client.views.LogView"; //$NON-NLS-1$
 
+	public Text logText;
+	
 	public LogView() {
 	}
 
@@ -20,7 +25,14 @@ public class LogView extends ViewPart {
 	@Override
 	public void createPartControl(Composite parent) {
 		Composite container = new Composite(parent, SWT.BORDER);
+		container.setLayout(new FillLayout(SWT.HORIZONTAL));
+		{
+			logText = new Text(container, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+		}
+		logText.setTextLimit(100000);
 
+		LogUtil.init(logText);
+		
 		createActions();
 		initializeToolBar();
 		initializeMenu();

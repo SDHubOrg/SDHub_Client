@@ -48,7 +48,7 @@ public class SDHubPorter implements IDataPorter {
 		try{
 
 			conn = MariaDBManager.mariaDS.getConnection();
-			MariaDBManager.printInnerDSStats();
+			//MariaDBManager.printInnerDSStats();
 			conn.setAutoCommit(false);
 			
 			String sqlString = "SELECT COUNT(*) FROM " + tableName.toLowerCase();
@@ -113,7 +113,7 @@ public class SDHubPorter implements IDataPorter {
 		ResultSet rs = null;
 		try{
 			conn = MariaDBManager.mariaDS.getConnection();
-			MariaDBManager.printInnerDSStats();
+			//MariaDBManager.printInnerDSStats();
 			conn.setAutoCommit(false);
 
 			stmt = conn.prepareStatement("select max(seqNo) from " + tableName);
@@ -179,7 +179,7 @@ public class SDHubPorter implements IDataPorter {
 		
 		try{
 			conn = MariaDBManager.mariaDS.getConnection();
-			MariaDBManager.printInnerDSStats();
+			//MariaDBManager.printInnerDSStats();
 			conn.setAutoCommit(false);
 			stmt =  conn.createStatement();
 			
@@ -335,7 +335,7 @@ public class SDHubPorter implements IDataPorter {
 
 		try{
 			conn = MariaDBManager.mariaDS.getConnection();
-			MariaDBManager.printInnerDSStats();
+			//MariaDBManager.printInnerDSStats();
 			conn.setAutoCommit(false);
 			stmt = conn.prepareStatement(createTableString);
 

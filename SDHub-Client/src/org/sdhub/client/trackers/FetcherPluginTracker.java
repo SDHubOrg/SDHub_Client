@@ -22,8 +22,8 @@ public class FetcherPluginTracker implements ServiceTrackerCustomizer {
 		IDataFetcher dataFetcher = (IDataFetcher) bc.getService(reference);
 
 		String dataFetcherName = dataFetcher.getName();
-		System.out.print("Adding Plugin: ");
-		System.out.println(dataFetcherName);
+		//System.out.print("Adding Plugin: ");
+		//System.out.println(dataFetcherName);
 
 		if (FetcherPlugins.dataFetchersHashMap.isEmpty()) {
 			//PlatformUI.getPreferenceStore().setValue("FetcherPluginName", dataFetcherName);
@@ -38,8 +38,8 @@ public class FetcherPluginTracker implements ServiceTrackerCustomizer {
 		IDataFetcher dataFetcher = (IDataFetcher) bc.getService(reference);
 
 		String dataFetcherName = dataFetcher.getName();
-		System.out.print("Modify Plugin: ");
-		System.out.println(dataFetcherName);
+		//System.out.print("Modify Plugin: ");
+		//System.out.println(dataFetcherName);
 		
 		FetcherPlugins.dataFetchersHashMap.put(dataFetcherName, dataFetcher);
 		return;
@@ -51,8 +51,8 @@ public class FetcherPluginTracker implements ServiceTrackerCustomizer {
 		IDataFetcher dataFetcher = (IDataFetcher) bc.getService(reference);
 
 		String dataFetcherName = dataFetcher.getName();
-		System.out.print("Remove Plugin: ");
-		System.out.println(dataFetcherName);
+		//System.out.print("Remove Plugin: ");
+		//System.out.println(dataFetcherName);
 		
 		if (FetcherPlugins.dataFetchersHashMap.containsKey(dataFetcherName)) {
 			FetcherPlugins.dataFetchersHashMap.remove(dataFetcherName);
